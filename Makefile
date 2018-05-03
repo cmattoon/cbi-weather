@@ -1,0 +1,14 @@
+.PHONY:
+XCODEBUILD=/usr/bin/xcodebuild
+PROJECT_NAME=CBIWeatherApp
+PROJECT_SCHEME=$(PROJECT_NAME)
+PROJECT_DIR=$(PROJECT_NAME).xcodeproj
+PREFIX=$(XCODEBUILD) -project $(PROJECT_DIR) -scheme $(PROJECT_SCHEME)
+
+.PHONY: list
+list:
+	$(XCODEBUILD) -list
+
+.PHONY: app
+app:
+	$(PREFIX)

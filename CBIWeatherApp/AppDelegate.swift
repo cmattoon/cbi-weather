@@ -9,6 +9,27 @@
 import Cocoa
 import Foundation
 
+// API Response from https://api.sunrise-sunset.org/json?lat=42.3599&lng=-71.0730&date=today
+struct LocationInfo {
+    let status: String
+    let results: (
+    sunrise: String,
+    sunset: String,
+    day_length: String,
+    civil_noon: String,
+    civil_twilight_begin: String,
+    civil_twilight_end: String,
+    nautical_twilight_begin: String,
+    nautical_twilight_end: String,
+    astronomical_twilight_begin: String,
+    astronomical_twilight_end: String
+    
+    func Init(data: foo) {
+        
+    )
+}
+
+
 extension Date {
     func dateAt(hours: Int, minutes: Int) -> Date {
         let calendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
@@ -24,9 +45,21 @@ extension Date {
         return newDate
     }
 }
+
+enum APIError: Error {
+    case urlError(reason: String)
+    case objectSerialization(reason: String)
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     let TIMER_INTERVAL = 60.0 * 5
+    
+    let LAT = 42.3599
+    let LON = -71.0730
+    
+    let LAT_DMS = "N-42-21-35.64"
+    let LON_DMS = "W-71-4-22.79"
     
     let SUNSET_API = "https://api.sunrise-sunset.org/json?lat=42.3599&lng=-71.0730&date=today"
     
@@ -35,6 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
     var timer = Timer()
+    var locationInfo = LocationInfo()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
@@ -65,17 +99,39 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                 action: #selector(AppDelegate.updateWeather),
                                 keyEquivalent: "U"))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "About",
-                                action: #selector(AppDelegate.about),
-                                keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit",
                                 action: #selector(NSApplication.terminate),
                                 keyEquivalent: "Q"))
         statusItem.menu = menu
     }
     
-    @objc func about() {
+    func getSunsetTime() {
+        let session = URLSession.shared
+        let req = URLRequest(url: URL(string: ENDPOINT)!)
         
+        let task = session.dataTask(with: req) {
+            (responseData, resp, err) in
+            guard err == nil else {
+                print("ERR != NIL while requesting \(self.ENDPOINT)")
+                return
+            }
+            
+            guard let data = responseData else {
+                print("Got no data from \(self.ENDPOINT)")
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any], let info = LocationInfo(json, results: <#(sunrise: String, sunset: String, day_length: String, civil_noon: String, civil_twilight_begin: String, civil_twilight_end: String, nautical_twilight_begin: String, nautical_twilight_end: String, astronomical_twilight_begin: String, astronomical_twilight_end: String)#>) {
+                    print("Got location info")
+                    print("\(info)")
+                    locationInfo = info
+                }
+            } catch {
+                print("Caught exception")
+            }
+        })
+        task.resume()
     }
     
     func withinNormalHours() -> Bool {
@@ -140,4 +196,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 }
+
 
