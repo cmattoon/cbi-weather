@@ -11,7 +11,7 @@ The Chrome extension is written in JavaScript. It can be loaded in several ways:
 Install the latest published version by visiting the Chrome Web Store. This app
 is only available via this link, and will not appear in search results:
 
-[https://chrome.google.com/webstore/detail/cbi-weather/fcfjckolaboelenjdbpcmhcfedjicieb](https://chrome.google.com/webstore/detail/cbi-weather/fcfjckolaboelenjdbpcmhcfedjicieb)
+[http://bit.ly/cbi-weather-chrome](http://bit.ly/cbi-weather-chrome)
 
 
 ### Load Unpacked Extension (Development)
